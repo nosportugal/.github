@@ -1,0 +1,13 @@
+{
+  "name": "MPro Quarkus Microservice Workflow",
+  "description": "MPro Quarkus Microservice workflow template.",
+  "iconName": "example-icon",
+  "categories": [
+    "Quarkus"
+  ],
+  "filePatterns": [
+    "package.json$",
+    "^Dockerfile",
+    ".*\\.md$"
+  ]
+}
