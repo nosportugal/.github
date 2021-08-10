@@ -1,0 +1,21 @@
+name: lint
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: markdownlint
+        uses: reviewdog/action-markdownlint@v0.1
+        if: ${{ !env.ACT }} #! uncomment to skip when using act - https://github.com/nektos/act#skipping-steps
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: warning
+          filter_mode: nofilter
+          fail_on_error: true
