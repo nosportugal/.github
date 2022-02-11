@@ -1,3 +1,4 @@
+# 📑 Description
 <!--
 Thanks for creating this pull request 🤗
 
@@ -9,14 +10,6 @@ Please make sure that the pull request is limited to one type (docs, feature, et
 <!--
 Closes #<issue-number1-here>
 Closes #<issue-number2-here>
--->
-
-# 📑 Description
-<!-- Add a brief description of the pr -->
-
-<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax
-- [ ] Not Completed
-- [x] Completed
 -->
 
 ## ✅ Checks
