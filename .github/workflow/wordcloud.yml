@@ -26,16 +26,14 @@ jobs:
         run: |
           pip install wordcloud==1.9.3
 
-      - name: Get org repo name 📚
-        uses: austenstone/get-org-repos@97cd5be0027a2640c2c16f18b2a5a4e5be008fe2 #v3.1.0
-        with:
-          github-token: ${{ secrets.R2D2_COMMITTER }}
-          org: "nosportugal"
-        id: get-org-repos
+      - name: Get org wide technologies 🪨
+        run: |
+          sh src/main.sh
 
       - name: Generate wordcloud ☁️
         run: |
-          wordcloud_cli --imagefile output.png --mode RGB --mask mask.png --scale 2 --min_word_length 2 --contour_width 0.1 --contour_color steelblue --random_state $RANDOM --prefer_horizontal 0.5 --margin 1 --max_words 2000 <<< ${{ steps.get-org-repos.outputs.repos }}
+          wordcloud_cli --text repo_languages.txt --imagefile output.png --mode RGB --mask mask.png --scale 2 --min_word_length 2 --contour_width 0.1 --contour_color steelblue --random_state $RANDOM --prefer_horizontal 0.5 --margin 1 --max_words 2000
+          rm repo_languages.txt
 
       - name: Sign commit and push changes 📌
         uses: planetscale/ghcommit-action@v0.1.35
