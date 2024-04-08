@@ -29,7 +29,7 @@ jobs:
       - name: Get org repo name 📚
         uses: austenstone/get-org-repos@97cd5be0027a2640c2c16f18b2a5a4e5be008fe2 #v3.1.0
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
+          github-token: ${{ secrets.R2D2_COMMITTER }}
           org: "nosportugal"
         id: get-org-repos
 
@@ -37,19 +37,11 @@ jobs:
         run: |
           wordcloud_cli --imagefile output.png --mode RGB --mask mask.png --scale 2 --min_word_length 2 --contour_width 0.1 --contour_color steelblue --random_state $RANDOM --prefer_horizontal 0.5 --margin 1 --max_words 2000 <<< ${{ steps.get-org-repos.outputs.repos }}
 
-      - name: Import GPG key
-        id: import-gpg
-        uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 #v6.1.0
-        with:
-          gpg_private_key: ${{ secrets.NOSIGITAUTO_GPG_KEY }}
-          passphrase: ${{ secrets.NOSIGITAUTO_GPG_PASSPHRASE }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
-
       - name: Sign commit and push changes 📌
-        run: |
-          git config --global user.email "${{ steps.import-gpg.outputs.email }}"
-          git config --global user.name "${{ steps.import-gpg.outputs.name }}"
-          git add .
-          git commit -S -m "☁️ Update wordcloud"
-          git push
+        uses: planetscale/ghcommit-action@v0.1.35
+        with:
+          commit_message: "☁️ Update wordcloud"
+          repo: ${{ github.repository }}
+          branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.R2D2_COMMITTER }}
