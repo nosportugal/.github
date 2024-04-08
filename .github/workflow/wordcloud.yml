@@ -13,6 +13,9 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v4.1.1
+        with:
+          sparse-checkout: |
+            mask.png
 
       - name: Setup python 🐍
         uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d #v5.1.0
@@ -21,15 +24,32 @@ jobs:
 
       - name: Install wordcloud 📦
         run: |
-          pip install wordcloud
+          pip install wordcloud==1.9.3
 
       - name: Get org repo name 📚
         uses: austenstone/get-org-repos@97cd5be0027a2640c2c16f18b2a5a4e5be008fe2 #v3.1.0
         with:
-          github-token: ${{ secrets.TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN }}
           org: "nosportugal"
         id: get-org-repos
 
       - name: Generate wordcloud ☁️
         run: |
-          wordcloud_cli --text text.txt --imagefile output.png --mode RGB --mask mask.png --scale 2 --min_word_length 2 --contour_width 0.1 --contour_color steelblue --random_state $RANDOM --prefer_horizontal 0.5 --margin 1 --max_words 2000 <<< ${{ steps.get-org-repos.outputs.repos }}
+          wordcloud_cli --imagefile output.png --mode RGB --mask mask.png --scale 2 --min_word_length 2 --contour_width 0.1 --contour_color steelblue --random_state $RANDOM --prefer_horizontal 0.5 --margin 1 --max_words 2000 <<< ${{ steps.get-org-repos.outputs.repos }}
+
+      - name: Import GPG key
+        id: import-gpg
+        uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 #v6.1.0
+        with:
+          gpg_private_key: ${{ secrets.NOSIGITAUTO_GPG_KEY }}
+          passphrase: ${{ secrets.NOSIGITAUTO_GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      - name: Sign commit and push changes 📌
+        run: |
+          git config --global user.email "${{ steps.import-gpg.outputs.email }}"
+          git config --global user.name "${{ steps.import-gpg.outputs.name }}"
+          git add .
+          git commit -S -m "☁️ Update wordcloud"
+          git push
