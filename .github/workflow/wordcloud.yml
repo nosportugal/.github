@@ -32,7 +32,7 @@ jobs:
 
       - name: Generate wordcloud ☁️
         run: |
-          wordcloud_cli --text repo_languages.txt --imagefile output.png --mode RGB --mask mask.png --scale 2 --min_word_length 2 --contour_width 0.1 --contour_color steelblue --random_state $RANDOM --prefer_horizontal 0.5 --margin 1 --max_words 2000
+          wordcloud_cli --text repo_languages.txt --imagefile output.png --mode RGB --mask mask.png --scale 2 --min_word_length 1 --contour_width 0.1 --contour_color steelblue --random_state $RANDOM --prefer_horizontal 0.5 --margin 1 --max_words 2000
           rm repo_languages.txt
 
       - name: Sign commit and push changes 📌
