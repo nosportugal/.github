@@ -30,6 +30,8 @@ jobs:
       - name: Get org wide technologies 🪨
         run: |
           sh ${{ github.workspace }}/src/main.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Generate wordcloud ☁️
         run: |
