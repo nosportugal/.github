@@ -29,7 +29,7 @@ jobs:
 
       - name: Get org wide technologies 🪨
         run: |
-          ./src/main.sh
+          sh ./src/main.sh
         env:
           GH_TOKEN: ${{ github.token }}
 
