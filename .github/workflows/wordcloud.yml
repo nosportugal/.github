@@ -28,7 +28,7 @@ jobs:
 
       - name: Get org wide technologies 🪨
         run: |
-          sh src/main.sh
+          sh ${{ github.workspace }}/src/main.sh
 
       - name: Generate wordcloud ☁️
         run: |
