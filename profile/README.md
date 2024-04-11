@@ -1,4 +1,4 @@
-# NOS Portugal
+![WordCloud](../output.png)
 
 ## Welcome to NOS organization on Github!
 
