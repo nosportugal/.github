@@ -45,4 +45,4 @@ jobs:
           repo: ${{ github.repository }}
           branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
         env:
-          GITHUB_TOKEN: ${{ secrets.R2D2_TEAM_CLEANER }}
+          GITHUB_TOKEN: ${{ secrets.R2D2_COMMITTER }}
