@@ -16,6 +16,7 @@ jobs:
         with:
           sparse-checkout: |
             mask.png
+            src/main.sh
 
       - name: Setup python 🐍
         uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d #v5.1.0
@@ -28,7 +29,9 @@ jobs:
 
       - name: Get org wide technologies 🪨
         run: |
-          sh src/main.sh
+          sh ./src/main.sh
+        env:
+          GH_TOKEN: ${{ secrets.R2D2_COMMITTER }}
 
       - name: Generate wordcloud ☁️
         run: |
