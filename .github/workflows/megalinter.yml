@@ -1,13 +1,12 @@
 # MegaLinter GitHub Action configuration file
-# More info at https://oxsecurity.github.io/megalinter
+# More info at https://megalinter.io
 name: MegaLinter
 
 on:
-  # Trigger this initialization at every push. Action will also be visible from Pull Requests to master
   pull_request:
   workflow_dispatch:
 
-env: # Comment env block if you do not want to apply fixes
+env:
   APPLY_FIXES_EVENT: pull_request # Decide which event triggers application of fixes in a commit or a PR (pull_request, push, all)
   APPLY_FIXES_MODE: commit # If APPLY_FIXES is used, defines if the fixes are directly committed (commit) or posted in a PR (pull_request)
 
@@ -15,35 +14,39 @@ concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   megalinter:
+    name: MegaLinter
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: true
           token: ${{ secrets.R2D2_COMMITTER }}
 
-      # MegaLinter
+      # MegaLinter — ci_light flavor: lightweight, focused on shell, YAML, JSON, XML, Markdown
+      # https://megalinter.io/latest/flavors/ci_light/
       - name: MegaLinter
         id: ml
-        # You can override MegaLinter flavor used to have faster performances
-        # More info at https://oxsecurity.github.io/megalinter/flavors/
-        uses: oxsecurity/megalinter/flavors/terraform@v7.10.0
+        uses: oxsecurity/megalinter/flavors/ci_light@v9.4.0
         env:
-          # All available variables are described in documentation
-          # https://oxsecurity.github.io/megalinter/configuration/
-          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }} # Validates all source when push on main, else just the git diff with main. Override with true if you always want to lint all sources
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # ADD YOUR CUSTOM ENV VARIABLES HERE OR DEFINE THEM IN A FILE .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
-          # DISABLE: COPYPASTE,SPELL # Uncomment to disable copy-paste and spell checks
 
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
         if: ${{ success() }} || ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MegaLinter reports
           path: |
@@ -52,10 +55,10 @@ jobs:
 
       - name: Commit and push applied linter fixes
         if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
-        uses: planetscale/ghcommit-action@v0.1.35
+        uses: planetscale/ghcommit-action@v0.2.20
         with:
-            commit_message: "[MegaLinter] Apply linters fixes"
-            repo: ${{ github.repository }}
-            branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
+          commit_message: "[MegaLinter] Apply linters fixes"
+          repo: ${{ github.repository }}
+          branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
         env:
-            GITHUB_TOKEN: ${{ secrets.R2D2_COMMITTER }}
+          GITHUB_TOKEN: ${{ secrets.R2D2_COMMITTER }}

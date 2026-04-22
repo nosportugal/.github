@@ -1,31 +1,36 @@
 name: ☁️ WordCloud
 
-# everday at 00:00 UTC.
+# everyday at 00:00 UTC.
 on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   update-readme:
     name: Update Readme with WordCloud ☁️
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v4.1.1
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             mask.png
             src/main.sh
 
       - name: Setup python 🐍
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d #v5.1.0
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version: "3.13"
 
       - name: Install wordcloud 📦
         run: |
-          pip install wordcloud==1.9.3
+          pip install wordcloud==1.9.4
 
       - name: Get org wide technologies 🪨
         run: |
@@ -39,7 +44,7 @@ jobs:
           rm repo_languages.txt
 
       - name: Sign commit and push changes 📌
-        uses: planetscale/ghcommit-action@v0.1.35
+        uses: planetscale/ghcommit-action@v0.2.20
         with:
           commit_message: "☁️ Update wordcloud"
           repo: ${{ github.repository }}
